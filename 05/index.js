@@ -1,80 +1,71 @@
 const fs = require('fs');
 
-let winStreakPoints = 0;
-
 const inputLines =
     fs.readFileSync("./input.txt", { encoding: "utf-8" })
     .split("\n\n")
 ;
 
-let moveInstructions = inputLines[0];
+let placementInstructions = inputLines[0];
+let moveInstructions = inputLines[1];
 let elementsMove = [[],[],[],[],[],[],[],[],[]];
 
-for ( let i = 0; i < (moveInstructions.split("\n").length -1) ; i++) {
-    let kek = moveInstructions.split("\n")[i];
-    console.log(kek);
-    // console.log(kek);
+for ( let i = 0; i < (placementInstructions.split("\n").length -1) ; i++) {
+    let elShort = placementInstructions.split("\n")[i];
     for( let j = 0 ; j < 9 ; j ++ ) {
 
-        let ideSieZabic = j*4 +1;
-        console.log(kek[ideSieZabic], i);
-        elementsMove[j][i] = kek[ideSieZabic];
+        let elNum = j*4 +1;
+        if (elShort[elNum] !== ' ') {
+            elementsMove[j][i] = elShort[elNum];
+        }
    
     }
 }
+elementsMove = elementsMove.map(x => x.filter(el => el));
 
 console.log(elementsMove);
 
-// console.log(elementsMove);
+moveInstructions = moveInstructions
+.split("\n");
+// console.log(moveInstructions);
 
-// const inputLines =
-//     fs.readFileSync("./input.txt", { encoding: "utf-8" })
-//         .split("\n")
-//         .filter(x => x.length > 1)
-//         .map(x =>
-//             x.split(",").map(y =>
-//                 y.split("-").map(x => parseInt(x))
-//             )
-//         );
+for (let i = 0; i < moveInstructions.length -1; i++) {
+    let editString;
+    editString = moveInstructions[i].indexOf(" ");
+    let howManyToMove = moveInstructions[i].slice(editString+1, moveInstructions[i].indexOf("f"));
+    let editString2 = moveInstructions[i].indexOf("om");
+    editString2 += 3;
+    let from = moveInstructions[i].slice(editString2, moveInstructions[i].indexOf(" to"));
+    let editString3 = moveInstructions[i].indexOf("to") + 3;
+    let to = moveInstructions[i].slice(editString3);
 
+    let parsedFrom = parseInt(from) - 1;
+    let parsedHowMany = parseInt(howManyToMove);
+    let parsedTo = parseInt(to) - 1;
 
-// let s1 = [];
-// let s2 = [];
-// let finalS = 0;
+    if(elementsMove[parsedFrom]){
+        // console.log(elementsMove[parsedFrom]);
+        let elLength = elementsMove[parsedFrom].length;
+        let iT = 0;
+        for(let i = 0; i < parsedHowMany; i++){
+            if (elementsMove[parsedFrom][0]){
+                // console.log("moving how many" , parsedHowMany ,  " moving from: " , parsedFrom , " moving to: " , parsedTo);
+                const movedEl = elementsMove[parsedFrom].shift();
+                // console.log(elementsMove[parsedTo][0]);
+                elementsMove[parsedTo].unshift(movedEl);
+                iT ++;
+            } else { 
+                console.log("no Element to move");
+            }
+        }
+    } 
+    else {
+        console.log("no Element to move");
+    }
+}
 
-// for (let i = 0; i < inputLines.length; i++) {
+let displayMeBecauseSheCantRead = " ";
 
-
-//     const first = s1[i] = inputLines[i][0];
-//     const second = s2[i] = inputLines[i][1];
-//     console.log(first, second);
-
-
-//     if (  ((second[0] >= first[0] && second[0] <= first[1])
-//         || (first[0] >= second[0] && first[0] <= second[1])
-//     )) {
-//         finalS += 1;
-//     }
-
-
-//     console.log(finalS);
-    // let prioritySum = 0;
-
-    // for(let i = 0; i < finalS.length ; i++) {
-    //     let val;
-    //     if(finalS[i] == finalS[i].toUpperCase()) {
-    //         val = finalS[i].charCodeAt(0) - "A".charCodeAt(0) + 27;
-    //     } else {
-    //         val = finalS[i].charCodeAt(0) - "a".charCodeAt(0) + 1;
-    //     }
-
-    //     // console.log(finalS[i], val)
-    //     prioritySum += val;
-    // }
-
-    // console.log(`Liczba GU: ${prioritySum}`);
-
-
-
-
-
+for (i = 0; i < elementsMove.length; i++) {
+    displayMeBecauseSheCantRead+=(elementsMove[i].shift());
+    console.log( displayMeBecauseSheCantRead );
+}
