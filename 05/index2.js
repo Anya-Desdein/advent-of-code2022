@@ -1,0 +1,61 @@
+const fs = require('fs');
+
+const inputLines =
+    fs.readFileSync("./input.txt", { encoding: "utf-8" })
+    .split("\n\n")
+;
+
+let placementInstructions = inputLines[0];
+let moveInstructions = inputLines[1];
+let elementsMove = [[],[],[],[],[],[],[],[],[]];
+
+for ( let i = 0; i < (placementInstructions.split("\n").length -1) ; i++) {
+    let elShort = placementInstructions.split("\n")[i];
+    for( let j = 0 ; j < 9 ; j ++ ) {
+
+        let elNum = j*4 +1;
+        if (elShort[elNum] !== ' ') {
+            elementsMove[j][i] = elShort[elNum];
+        }
+   
+    }
+}
+elementsMove = elementsMove.map(x => x.filter(el => el));
+
+// console.log(elementsMove);
+
+moveInstructions = moveInstructions
+.split("\n");
+// console.log(moveInstructions);
+
+for (let i = 0; i < moveInstructions.length -1; i++) {
+    let editString;
+    editString = moveInstructions[i].indexOf(" ");
+    let howManyToMove = moveInstructions[i].slice(editString+1, moveInstructions[i].indexOf("f"));
+    let editString2 = moveInstructions[i].indexOf("om");
+    editString2 += 3;
+    let from = moveInstructions[i].slice(editString2, moveInstructions[i].indexOf(" to"));
+    let editString3 = moveInstructions[i].indexOf("to") + 3;
+    let to = moveInstructions[i].slice(editString3);
+
+    let parsedFrom = parseInt(from) - 1;
+    let parsedHowMany = parseInt(howManyToMove);
+    let parsedTo = parseInt(to) - 1;
+    const moved = elementsMove[parsedFrom];
+
+    if(elementsMove[parsedFrom]) {
+        for(let j = parsedHowMany; j > 0; j--){
+            const [ movedEl ] = moved.splice(j-1, 1);
+            console.log("kek" , movedEl , "kek");
+            elementsMove[parsedTo].unshift(movedEl);
+    //             console.log(elementsMove[parsedTo]);
+        }
+    } 
+}
+
+let displayMeBecauseSheCantRead = " ";
+
+for (i = 0; i < elementsMove.length; i++) {
+    displayMeBecauseSheCantRead+=(elementsMove[i].shift());
+    console.log( displayMeBecauseSheCantRead );
+}

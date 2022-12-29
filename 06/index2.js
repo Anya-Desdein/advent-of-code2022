@@ -28,10 +28,10 @@ for (let j = 0; j < in1L - 14; j++) {
     in2 = inputLines[j+1];
     in3 = inputLines[j+2];
     in4 = inputLines[j+3];
-    in1 = in1.charCodeAt(0);
-    in2 = in2.charCodeAt(0);
-    in3 = in3.charCodeAt(0);
-    in4 = in4.charCodeAt(0);
+    // in1 = in1.charCodeAt(0);
+    // in2 = in2.charCodeAt(0);
+    // in3 = in3.charCodeAt(0);
+    // in4 = in4.charCodeAt(0);
 
     // console.log(in1, in2, in3);
 
