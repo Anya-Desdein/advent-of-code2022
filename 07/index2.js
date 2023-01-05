@@ -2,10 +2,6 @@ const fs = require('fs');
 
 const folders = {};
 const currFolderPath = [];
-let allFolderSum = 0;
-const sizeSymbol = Symbol('size');
-let perfectfolderSize = 1454188000;
-const deletionSize = 3655934;
 
 function sumFolder(dirEls) {
     let folderSum = 0;
@@ -20,27 +16,18 @@ function sumFolder(dirEls) {
 }
 
 
-function folderSummarizer(folder) {
+function folderSummarizer(folder, callback) {
     if(typeof folder !== "object") {
         return;
     }
     
     let dirEls = Object.entries(folder);
+    const folderSize = sumFolder(dirEls);
 
-    folder[sizeSymbol] = sumFolder(dirEls);
-    allFolderSum += folder[sizeSymbol];
-
-    // console.log(folder[sizeSymbol]);
-
-    if (folder[sizeSymbol] >= deletionSize) {
-        if (folder[sizeSymbol] < perfectfolderSize){
-            perfectfolderSize = folder[sizeSymbol];
-        }
-    }
-
+    callback(folderSize, folder);
 
     for (let [key, value] of dirEls) {
-        folderSummarizer(value);
+        folderSummarizer(value, callback);
     }
 }
 
@@ -60,33 +47,27 @@ function changeDirectoryOut() {
 }
 
 function listEl(data) {
-    if (currFolderPath.length !== 0) {
-        let obj = folders;
-        for(let i = 0; i < currFolderPath.length; i++) {
-            // console.log(obj);
-            const pathSegment = currFolderPath[i];
-            // console.log(pathSegment);
-                if (obj[pathSegment]  === undefined) {
-                    obj[pathSegment] = {};
-                }
-            obj = obj[pathSegment];
-        }
-        for(let i = 0; i < data.length; i++) {
-            let dirData = data[i][1];
-            // console.log(data);
-            if (data[i][0] === "dir") {
-                // console.log(currFolderPath);
-                obj[dirData] = {};
-            } else {
-                // console.log(folders.obj);
-                obj[dirData] = parseFloat(data[i][0]);
+    let obj = folders;
+    for(let i = 0; i < currFolderPath.length; i++) {
+        // console.log(obj);
+        const pathSegment = currFolderPath[i];
+        // console.log(pathSegment);
+            if (obj[pathSegment]  === undefined) {
+                obj[pathSegment] = {};
             }
-        }
-        // console.log(folders);
-    } else {
-        // folders
+        obj = obj[pathSegment];
     }
-
+    for(let i = 0; i < data.length; i++) {
+        let dirData = data[i][1];
+        // console.log("LS", data[i], currFolderPath);
+        if (data[i][0] === "dir") {
+            // console.log(currFolderPath);
+            obj[dirData] = {};
+        } else {
+            // console.log(folders.obj);
+            obj[dirData] = parseFloat(data[i][0]);
+        }
+    }
 }
 
 function comparator(i, cdType, flData, data) {
@@ -133,6 +114,42 @@ iTerator: for(let i = 0; i < dataLength; i++) {
     comparator(i, commandType, parameters || [], dataArray);
 }
 // console.log(folders);
-folderSummarizer(folders);
-console.log("suma:", allFolderSum);
+
+// main:
+
+let allFolderSum = 0;
+const sizeSymbol = Symbol('size');
+
+// console.log(folders)
+
+folderSummarizer(folders, (folderSize, folder) => {
+    if(folderSize <= 100000) {
+        allFolderSum += folderSize;
+    }
+    folder[sizeSymbol] = folderSize;
+});
+
+const rootDirectorySize = folders[sizeSymbol];
+
+console.log("All folders sum <= 100000:", allFolderSum);
+console.log("Root directory size:", rootDirectorySize);
+
+
+const totalDiskSize = 70000000;
+const requiredDiskSize = 30000000;
+const freeSpace = totalDiskSize - rootDirectorySize;
+const requiredToFree = requiredDiskSize - freeSpace;
+
+console.log("Required to free:", requiredToFree);
+
+let perfectfolderSize = 1e15;
+
+folderSummarizer(folders, folderSize => {
+    if (folderSize >= requiredToFree) {
+        if (folderSize < perfectfolderSize){
+            perfectfolderSize = folderSize;
+        }
+    }
+});
+
 console.log(perfectfolderSize, "folder to delete size");
