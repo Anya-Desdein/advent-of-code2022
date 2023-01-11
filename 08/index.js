@@ -8,65 +8,59 @@ const inputLines =
             .map(parseFloat) 
         );
 
-let visibleTrees = 0;
+let inputLines2 = new Array(inputLines.length).fill(null).map(() => new Array(inputLines[0].length).fill(null));
+let inputLines3 = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(null));
+let inputLines4 = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(null));
+
 let visible = new Array(inputLines.length).fill(null).map(() => new Array(inputLines[0].length).fill(false));
 let visible2 = new Array(inputLines.length).fill(null).map(() => new Array(inputLines[0].length).fill(false));
 let visible3 = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(false));
 let visible4 = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(false));
 
-let flippedinputLines = new Array(inputLines.length).fill(null).map(() => new Array(inputLines[0].length).fill(null));
-let invertedTrees = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(null));
-let flippedInvertedTrees = new Array(inputLines[0].length).fill(null).map(() => new Array(inputLines.length).fill(null));
-
+let visibleTrees = 0;
 
 function checkVisibility(tree, i, j, z, arrayToCheck, visibleArray) {
-        let Slice;
-        if (arrayToCheck[i][j-1]) {
-            leftSlice  = arrayToCheck[i].slice(0, j-1);
-        } else {
-            leftSlice = false;
-            visibleArray[i][j] = true;
+    if (arrayToCheck[i][j-1-z] !== undefined) {
+        leftSlice = arrayToCheck[i].slice(0, j);
+    } else {
+        leftSlice = false;
+        visibleArray[i][j] = true;
+    }
+
+    if (leftSlice !== false && visibleArray[i][j] === false) {
+        let y = leftSlice.length;
+        if (tree > leftSlice[y - z - 1]) {
+            checkVisibility(tree, i, j, z+1, arrayToCheck, visibleArray);
         }
-    
-        if (leftSlice !== false && visibleArray[i][j] === false) {
-            let y = leftSlice.length;
-            if (tree > leftSlice[y - z]) {
-                if ( z === leftSlice.length-1 ) {
-                    visibleArray[i][j] = true;
-                } else {
-                    checkVisibility(tree, i, j, z+1);
-                }
-            }
-        }
+    }
 }
 
 arrayLength = inputLines.length;
 innerArrayLength = inputLines[0].length;
-invertedLength = invertedTrees.length;
-innerInvertedLength = invertedTrees[0].length;
+invertedLength = inputLines3.length;
+innerInvertedLength = inputLines3[0].length;
 
 // creating flipped arrays
 for (let j = 0; j < innerArrayLength; j++) { 
     for (let i = 0; i < arrayLength; i++) { 
-        invertedTrees[j][i] = inputLines[i][j];
+        inputLines3[j][i] = inputLines[i][j];
     }
 
 }
 
 for (let i = 0; i < arrayLength; i++) { 
     for (let j = 0; j < innerArrayLength; j++) { 
-        flippedinputLines[arrayLength - i-1][innerArrayLength - j-1] = inputLines[i][j];
+        inputLines2[i][innerArrayLength - j-1] = inputLines[i][j];
     }
 
 }
 
 for (let i = 0; i < invertedLength; i++) { 
     for (let j = 0; j < innerInvertedLength; j++) { 
-        flippedInvertedTrees[invertedLength - i-1][innerInvertedLength - j-1] = invertedTrees[i][j];
+        inputLines4[i][innerInvertedLength - j-1] = inputLines3[i][j];
     }
 
 }
-
 
 // checking if a tree is visible
 for (let i = 0; i < arrayLength; i++) {
@@ -78,22 +72,22 @@ for (let i = 0; i < arrayLength; i++) {
 
 for (let i = 0; i < invertedLength; i++) {
     for (let j = 0; j < innerInvertedLength; j++) {
-        const currTree = invertedTrees[i][j];
-        checkVisibility(currTree, i, j, 0, invertedTrees, visible3);
+        const currTree = inputLines3[i][j];
+        checkVisibility(currTree, i, j, 0, inputLines3, visible3);
     }
 }
 
 for (let i = 0; i < arrayLength; i++) {
     for (let j = 0; j < innerArrayLength; j++) {
-        const currTree = flippedinputLines[i][j];
-        checkVisibility(currTree, i, j, 0, flippedinputLines, visible2);
+        const currTree = inputLines2[i][j];
+        checkVisibility(currTree, i, j, 0, inputLines2, visible2);
     }
 }
 
 for (let i = 0; i < invertedLength; i++) {
     for (let j = 0; j < innerInvertedLength; j++) {
-        const currTree = flippedInvertedTrees[i][j];
-        checkVisibility(currTree, i, j, 0, flippedInvertedTrees, visible4 );
+        const currTree = inputLines4[i][j];
+        checkVisibility(currTree, i, j, 0, inputLines4, visible4 );
     }
 }
 
@@ -106,7 +100,7 @@ let visible7 = new Array(inputLines.length).fill(null).map(() => new Array(input
 for (let i = 0; i < visible2.length; i++) {
     for (let j = 0; j < visible2[i].length; j++) {
         const currBool = visible2[i][j];
-        visible5[i][j] = visible2[visible2.length - i-1][ visible2[i].length - j-1];
+        visible5[i][j] = visible2[i][ visible2[i].length - j-1];
     }
 }
 for (let i = 0; i < visible3.length; i++) {
@@ -118,7 +112,7 @@ for (let i = 0; i < visible3.length; i++) {
 for (let i = 0; i < visible4.length; i++) {
     for (let j = 0; j < visible4[i].length; j++) {
         const currBool = visible4[i][j];
-        visible7[i][j] = visible4[visible4.length - i-1][visible4[i].length - j-1];
+        visible7[j][i] = visible4[i][visible4[i].length - j-1];
     }
 }
 
@@ -138,12 +132,25 @@ function visibleCounter (array, array2, array3, array4) {
 }
 
 visibleCounter(visible, visible5, visible6, visible7);
+
+console.log(inputLines);
 console.log(visible);
+
+console.log("\n");
+console.log(inputLines);
 console.log(visible5);
+
+console.log("\n");
+console.log(inputLines);
 console.log(visible6);
+
+console.log("\n");
+console.log(inputLines);
 console.log(visible7);
+
+console.log("\n");
 console.log(visibleTrees);
 console.log(inputLines.length, inputLines[0].length);
-console.log(invertedTrees.length, invertedTrees[0].length);
-console.log(flippedinputLines.length, flippedinputLines[0].length);
-console.log(flippedInvertedTrees.length, flippedInvertedTrees[0].length);
+console.log(inputLines3.length, inputLines3[0].length);
+console.log(inputLines2.length, inputLines2[0].length);
+console.log(inputLines4.length, inputLines4[0].length);
