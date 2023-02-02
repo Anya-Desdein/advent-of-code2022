@@ -17,10 +17,11 @@ const tailLocations = [];
 let dataLength = inputLines.length;
 
 function numberParser(numbers) {
-    return numbers.split(",")
+    return numbers
+        .split(",")
         .map((el) =>
-        parseInt(el)
-    );
+            parseInt(el)
+        );
 }
 
 
@@ -55,15 +56,12 @@ function calcLoc(headLocation, tailLocation, move) {
         headLocation[0] +=1; 
 
     } else if (move === "L"){
-
         headLocation[0] -=1; 
     
     } else if(move === "U"){
-        
         headLocation[1] -=1;  
     
     } else if(move === "D"){
-        
         headLocation[1] +=1; 
 
     } else {
@@ -74,7 +72,6 @@ function calcLoc(headLocation, tailLocation, move) {
     upDown = headLocation[1] - tailLocation[1];
 
     if (Math.abs(leftRight) >= 1.9 || Math.abs(upDown) >= 1.9 ) {
-
         tailLocation[0] += Math.sign(leftRight);
         tailLocation[1] += Math.sign(upDown);
 
